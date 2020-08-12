@@ -1,0 +1,40 @@
+@dev_host = http://localhost:8888
+@id = 5f32846233c1c00aafa9b91c
+
+### 登录
+POST {{dev_host}}/users/login
+content-type: application/json
+
+{
+    "name": "欢欢",
+    "password": "123456"
+}
+
+### 获取用户列表
+GET {{dev_host}}/users 
+
+### 获取特定用户
+GET {{dev_host}}/users/{{id}}
+
+### 新增用户
+POST {{dev_host}}/users
+content-type: application/json
+
+{
+    "name": "欢欢",
+    "city": "Fuzhou",
+    "password": "123456"
+}
+
+### 修改用户
+PATCH {{dev_host}}/users/{{id}}
+content-type: application/json
+
+{
+    "name": "灵灵",
+    "city": "Xiamen"
+}
+
+### 删除用户
+DELETE {{dev_host}}/users/{{id}}
+content-type: application/json
