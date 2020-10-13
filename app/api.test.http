@@ -1,40 +1,47 @@
 @dev_host = http://localhost:8888
-@id = 5f32846233c1c00aafa9b91c
+@id = 5f85447425e9badfde987be8
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmODU0NDc0MjVlOWJhZGZkZTk4N2JlOCIsIm5hbWUiOiLmlrDkuroiLCJpYXQiOjE2MDI1NzY2NjEsImV4cCI6MTYwMzE4MTQ2MX0.pNcxxkrjhQizll6hjDntv5BYzexAGzoXGnpMgdZ-WLs
+
+### 注册
+POST {{dev_host}}/api/users/register
+content-type: application/json
+
+{
+    "name": "新人",
+    "city": "Beijing",
+    "password": "123456"
+}
 
 ### 登录
-POST {{dev_host}}/users/login
+POST {{dev_host}}/api/users/login
 content-type: application/json
 
 {
-    "name": "欢欢",
+    "name": "新人",
     "password": "123456"
 }
+
+### 获取userInfo
+GET {{dev_host}}/api/users/info
+Authorization:Bearer {{token}}
 
 ### 获取用户列表
-GET {{dev_host}}/users 
+GET {{dev_host}}/api/users
 
 ### 获取特定用户
-GET {{dev_host}}/users/{{id}}
-
-### 新增用户
-POST {{dev_host}}/users
-content-type: application/json
-
-{
-    "name": "欢欢",
-    "city": "Fuzhou",
-    "password": "123456"
-}
+GET {{dev_host}}/api/users/{{id}}
 
 ### 修改用户
-PATCH {{dev_host}}/users/{{id}}
+PATCH {{dev_host}}/api/users/{{id}}
 content-type: application/json
+Authorization:Bearer {{token}}
 
 {
-    "name": "灵灵",
-    "city": "Xiamen"
+    "name": "高航错误子",
+    "city": "Fuzhou"
 }
 
 ### 删除用户
-DELETE {{dev_host}}/users/{{id}}
+DELETE {{dev_host}}/api/users/{{id}}
 content-type: application/json
+Authorization:Bearer {{token}}
