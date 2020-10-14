@@ -35,7 +35,14 @@ const UserSchema = new Schema({
     }],
     select: false
   },
-  brief: { type: String, default: '' }
+  brief: { type: String, default: '' },
+  following: {
+    type: [{
+      type: Schema.Types.ObjectId,
+      ref: 'User'
+    }],
+    select: false
+  }
 });
 
 const UserModel = model('User', UserSchema)

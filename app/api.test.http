@@ -54,3 +54,6 @@ Authorization:Bearer {{token}}
 DELETE {{dev_host}}/api/users/{{id}}
 content-type: application/json
 Authorization:Bearer {{token}}
+
+### 关注列表
+GET {{dev_host}}/api/users/{{id}}/follow

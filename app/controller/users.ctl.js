@@ -77,7 +77,7 @@ class UsersCtl {
       avatar_url: { type: 'string', required: false },
       gender: { type: 'string', required: false },
       headline: { type: 'string', required: false },
-      residence: { type: 'array', itemType: 'string', required: false },
+      residence: { type: 'array', item Type: 'string', required: false },
       business: { type: 'string', required: false },
       employments: { type: 'array', itemType: 'object', required: false },
       educations: { type: 'array', itemType: 'object', required: false },
@@ -93,6 +93,12 @@ class UsersCtl {
     const user = await User.findByIdAndRemove(ctx.params.id)
     if (!user) return ctx.status(404, '没有找到需要删除的用户')
     ctx.status = 204
+  }
+
+  async queryFollowing(ctx) {
+    const user = await User.findById(ctx.params.id).select('+following').populate('following')
+    if (!user) ctx.throw(404)
+    ctx.body = user.following
   }
 
 }

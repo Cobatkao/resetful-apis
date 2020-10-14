@@ -1,7 +1,7 @@
 const Router = require('koa-router')
 const jwt = require('koa-jwt')
 const userRouter = new Router({prefix: '/api/users'})
-const { find, findById, updateUser, deleteUser, registerUser, login, getUserInfo } = require('../controller/users.ctl')
+const { find, findById, updateUser, deleteUser, registerUser, login, getUserInfo, queryFollowing } = require('../controller/users.ctl')
 const { secret } = require('../config/index')
 
 const auth = jwt({ secret, passthrough:true }).unless({ path: [/\/login/, /\/register/] }) // 默认解码后的数据在 ctx.state.user
@@ -27,5 +27,7 @@ userRouter.delete('/:id', auth, checkOwner, deleteUser)
 userRouter.post('/register', registerUser)
 
 userRouter.post('/login', login)
+
+userRouter.get('/:id/follow', queryFollowing)
 
 module.exports = userRouter
