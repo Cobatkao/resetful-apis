@@ -57,3 +57,13 @@ Authorization:Bearer {{token}}
 
 ### 关注列表
 GET {{dev_host}}/api/users/{{id}}/follow
+
+### 关注某人
+PUT {{dev_host}}/api/users/following/{{id}}
+content-type: application/json
+Authorization:Bearer {{token}}
+
+### 取消关注
+DELETE {{dev_host}}/api/users/following/{{id}}
+content-type: application/json
+Authorization:Bearer {{token}}

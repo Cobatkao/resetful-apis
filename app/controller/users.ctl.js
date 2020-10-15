@@ -101,6 +101,43 @@ class UsersCtl {
     ctx.body = user.following
   }
 
+  async queryFollowers(ctx) {
+    if (!ctx.params.id) return ctx.throw(401, '参数未提供')
+    const users = await User.find({ following: ctx.params.id })
+    ctx.body = users
+  }
+
+  async checkUserExist(ctx, next) {
+    const user = await User.findById(ctx.params.id)
+    if (!user) ctx.throw(401, '用户不存在')
+    await next()
+  }
+
+  async follow(ctx) {
+    const target = ctx.params.id
+    const me = await User.findById(ctx.state.user.id).select('+following')
+    if (!me.following.map(id => id.toString()).includes(target)) {
+      me.following.push(target)
+      me.save()
+    } else {
+      ctx.throw(401, '关注错误，重复关注')
+    }
+    ctx.status = 204
+  }
+
+  async unfollow(ctx) {
+    const target = ctx.params.id
+    const me = await User.findById(ctx.state.user.id).select('+following')
+    const idx = me.following.map(id => id.toString()).indexOf(target)
+    if (idx > -1) {
+      me.splice(idx, 1)
+      me.save()
+    } else {
+      ctx.throw(401, '取关错误，未关注')
+    }
+    ctx.status = 204
+  }
+
 }
 
 module.exports = new UsersCtl()
