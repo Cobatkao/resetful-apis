@@ -20,7 +20,8 @@
     "koa-parameter": "^3.0.1",
     "koa-router": "^9.1.0",
     "koa-static": "^5.0.0",
-    "mongoose": "^5.9.28"
+    "mongoose": "^5.9.28",
+    "pug": "^3.0.0"
   },
   "devDependencies": {
     "cross-env": "^7.0.2",
