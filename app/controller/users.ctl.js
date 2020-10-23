@@ -1,4 +1,5 @@
 const User = require('../models/users.model')
+const Question = require('../models/question.model')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const { secret, tokenExpiresTime } = require('../config/index')
@@ -284,6 +285,65 @@ class UsersCtl {
       result: users,
       error_info: ''
     }
+  }
+
+  async followQuestion(ctx) {
+    const target = ctx.params.id
+    const me = await User.findById(ctx.state.user.id).select('+followingQuestions')
+    if (!me.followingQuestions.map(id => id.toString()).includes(target)) {
+      me.followingQuestions.push(target)
+      me.save()
+    } else {
+      ctx.throw(401, '关注错误，重复关注')
+    }
+    ctx.status = 200
+    ctx.body = {
+      message: 'ok',
+      result: true,
+      error_info: ''
+    }
+  }
+
+  async unfollowQuestion(ctx) {
+    const target = ctx.params.id
+    const me = await User.findById(ctx.state.user.id).select('+followingQuestions')
+    const idx = me.followingQuestions.map(id => id.toString()).indexOf(target)
+    if (idx > -1) {
+      me.followingQuestions.splice(idx, 1)
+      me.save()
+    } else {
+      ctx.throw(401, '取关错误，未关注')
+    }
+    ctx.status = 200
+    ctx.body = {
+      message: 'ok',
+      result: true,
+      error_info: ''
+    }
+  }
+
+  /**
+   * 用户的问题列表
+   * @param {*} ctx 
+   */
+  async queryQuestionList(ctx) { 
+    await Question.find({ questioner: ctx.params.id }, (err, users) => { 
+      if (err) {
+        ctx.status = 401
+        ctx.body = {
+          code: 401,
+          message: 'fail',
+          data: []
+        }
+      } else { 
+        ctx.status = 200
+        ctx.body = {
+          code: 200,
+          message: 'ok',
+          data: users
+        }
+      }
+    })
   }
 
 }

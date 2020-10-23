@@ -2,7 +2,7 @@ const Router = require('koa-router')
 const jwt = require('koa-jwt')
 const topicRouter = new Router({ prefix: '/api/topics' })
 const { queryTopicFollowers, queryFollowingTopics, checkUserExist, unfollowTopic, followTopic } = require('../controller/users.ctl')
-const { createTopic, deleteTopic, updateTopic, find, findTopicById, checkTopicExist } = require('../controller/topic.ctl')
+const { createTopic, deleteTopic, updateTopic, find, findTopicById, checkTopicExist, queryQuestions } = require('../controller/topic.ctl')
 
 const { secret } = require('../config/index')
 
@@ -19,5 +19,6 @@ topicRouter.delete('/unfollow/:id', auth, checkTopicExist, unfollowTopic) // 取
 
 topicRouter.get('/:id/followers', auth, checkTopicExist, queryTopicFollowers) // 获取某个话题下的关注者列表
 topicRouter.get('/:id/following', auth, checkUserExist, queryFollowingTopics) // 获取某个用户的关注话题列表
+topicRouter.get('/:id/questions', checkTopicExist, queryQuestions) // 获取话题下的问题列表
 
 module.exports = topicRouter

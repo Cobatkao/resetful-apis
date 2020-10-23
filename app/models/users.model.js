@@ -55,6 +55,13 @@ const UserSchema = new Schema({
       ref: 'Topic'
     }],
     select: false
+  },
+  followingQuestions: {
+    type: [{
+      type: Schema.Types.ObjectId,
+      ref: 'Question'
+    }],
+    select: false
   }
 }, { versionKey: false });
 
