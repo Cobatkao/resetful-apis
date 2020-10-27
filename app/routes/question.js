@@ -6,7 +6,7 @@ const { checkQuestionExist, checkQuestioner, find, findQuestionById, create, upd
 
 const { secret } = require('../config/index')
 
-const auth = jwt({ secret, passthrough:true }).unless({ path: [/\/login/, /\/register/] }) // 默认解码后的数据在 ctx.state.user
+const auth = jwt({ secret }).unless({ path: [/\/login/, /\/register/] }) // 默认解码后的数据在 ctx.state.user
 
 questionRouter.get('/', find)
 questionRouter.get('/:id', checkQuestionExist, findQuestionById)

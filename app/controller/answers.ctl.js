@@ -7,7 +7,10 @@ class AnswerCtl {
     const skipParam = limit * (Math.max(page-0, 1) - 1)
     const limitParam = Math.max(limit - 0, 5)
     const w = new RegExp(q)
-    const answers = await Answer.find({ content: w, questionId: ctx.params.questionId }).limit(limitParam).skip(skipParam)
+    const answers = await Answer
+      .find({ content: w, questionId: ctx.params.questionId })
+      .limit(limitParam)
+      .skip(skipParam)
     ctx.body = answers
   }
 

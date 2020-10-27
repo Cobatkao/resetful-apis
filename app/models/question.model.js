@@ -11,11 +11,12 @@ const QuestionSchema = new Schema({
     type: [{ type: Schema.Types.ObjectId, ref: "Topic" }],
     select: false
   },
-  createOn: {
-    type: Date,
-    default: Date.now     // 为该字段设置默认值
-  }
-}, { versionKey: false });
+  createOn: { type: Date, default: Date.now },
+  updateOn: { type: Date, default: Date.now }
+}, {
+    versionKey: false,
+    timestamps: { createdAt: 'createOn', updatedAt: 'updateOn' }
+});
 
 const QuestionModel = model('Question', QuestionSchema)
 module.exports = QuestionModel

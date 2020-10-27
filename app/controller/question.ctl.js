@@ -22,7 +22,11 @@ class QuestionCtl {
     const skipParam = limit * (Math.max(page-0, 1) - 1)
     const limitParam = Math.max(limit - 0, 5)
     const w = new RegExp(q)
-    const topics = await Question.find({ $or: [{title: w}, {description: q}] }).limit(limitParam).skip(skipParam)
+    const topics = await Question
+      .find({ $or: [{ title: w }, { description: q }] })
+      .limit(limitParam)
+      .skip(skipParam)
+      .populate('questioner')
     ctx.body = topics
   }
 

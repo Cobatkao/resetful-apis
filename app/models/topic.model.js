@@ -7,11 +7,12 @@ const TopicSchema = new Schema({
   name: { type: String, required: true, trim: true },
   avatar_url: { type: String, required: false },
   introduction: { type: String, required: false, select: false },
-  createOn: {
-    type: Date,
-    default: Date.now     // 为该字段设置默认值
-  }
-}, { versionKey: false });
+  createOn: { type: Date, default: Date.now },
+  updateOn: { type: Date, default: Date.now }
+}, {
+    versionKey: false,
+    timestamps: { createdAt: 'createOn', updatedAt: 'updateOn' }
+});
 
 const TopicModel = model('Topic', TopicSchema)
 module.exports = TopicModel
