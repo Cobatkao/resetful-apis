@@ -70,7 +70,7 @@ class TopicsCtl {
       if (err) {
         ctx.status = 404
         ctx.body = {
-          message: '跟新失败',
+          message: '更新失败',
           data: []
         }
       }

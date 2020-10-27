@@ -2,20 +2,18 @@
 const mongoose = require('mongoose');
 const { Schema, model } = mongoose
 
-const QuestionSchema = new Schema({
+const AnswerSchema = new Schema({
   __v: { type: Number, select: false },
-  title: { type: String, required: true, trim: true },
-  description: { type: String, required: false },
-  questioner: { type: Schema.Types.ObjectId, ref: "User", required: true, select: false },
-  topics: {
-    type: [{ type: Schema.Types.ObjectId, ref: "Topic" }],
-    select: false
-  },
-  createOn: {
-    type: Date,
-    default: Date.now     // 为该字段设置默认值
-  }
-}, { versionKey: false });
+  content: { type: String, required: true, trim: true },
+  answerer: { type: Schema.Types.ObjectId, ref: "User", required: true, select: false },
+  questionId: { type: String, required: true },
+  voteCount: { type: Number, required: true, default: 0 },
+  createOn: { type: Date, default: Date.now },
+  updateOn: { type: Date, default: Date.now }
+}, {
+    versionKey: false,
+    timestamps: { createdAt: 'createOn', updatedAt: 'updateOn' }
+});
 
-const QuestionModel = model('Question', QuestionSchema)
-module.exports = QuestionModel
+const AnswerModel = model('Answer', AnswerSchema)
+module.exports = AnswerModel

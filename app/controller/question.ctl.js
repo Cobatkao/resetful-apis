@@ -12,7 +12,7 @@ class QuestionCtl {
   async checkQuestioner(ctx, next) { 
     const { question } = ctx.state
     if (ctx.state.user.id !== question.questioner.toString()) { 
-      ctx.throw(403, '非法操作，无法删除非别人的问题')
+      ctx.throw(403, '没有权限')
     }
     await next()
   }
@@ -85,6 +85,7 @@ class QuestionCtl {
       ctx.status = 200
       ctx.body = {
         message: 'ok',
+        data: ctx.state.question
       }
     })
   }

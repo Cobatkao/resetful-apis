@@ -15,6 +15,8 @@ const UserSchema = new Schema({
   avatar_url: { type: String },
   gender: { type: String, enum: ['male', 'female'], default: 'male', required: true },
   headline: { type: String, default: '' },
+  createOn: { type: Date, default: Date.now },
+  updateOn: { type: Date, default: Date.now },
   residence: {
     type: [{
       type: Schema.Types.ObjectId,
@@ -62,8 +64,32 @@ const UserSchema = new Schema({
       ref: 'Question'
     }],
     select: false
+  },
+  likingAnswers: {
+    type: [{
+      type: Schema.Types.ObjectId,
+      ref: 'Answer'
+    }],
+    select: false
+  },
+  dislikingAnswers: {
+    type: [{
+      type: Schema.Types.ObjectId,
+      ref: 'Answer'
+    }],
+    select: false
+  },
+  collectingAnswers: {
+    type: [{
+      type: Schema.Types.ObjectId,
+      ref: 'Answer'
+    }],
+    select: false
   }
-}, { versionKey: false });
+}, {
+    versionKey: false,
+    timestamps: { createdAt: 'createOn', updatedAt: 'updateOn' }
+});
 
 const UserModel = model('User', UserSchema)
 module.exports = UserModel

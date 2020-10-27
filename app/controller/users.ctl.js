@@ -1,5 +1,6 @@
 const User = require('../models/users.model')
 const Question = require('../models/question.model')
+const Answer = require('../models/answer.model')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const { secret, tokenExpiresTime } = require('../config/index')
@@ -19,7 +20,11 @@ class UsersCtl {
     try {
       const user = await new User(ctx.request.body).save()
       ctx.status = 200
-      ctx.body = user
+      ctx.body = {
+      message: 'ok',
+      result: user,
+      error_info: ''
+    }
     } catch (error) {
       ctx.throw(500, error || error.message)
     }
@@ -134,7 +139,6 @@ class UsersCtl {
   }
 
   async follow(ctx) {
-    const target = ctx.params.id
     await User.findById(ctx.state.user.id, 'following', async (err, rel) => {
       if (err) {
         ctx.status = 404
@@ -143,8 +147,8 @@ class UsersCtl {
           data: []
         }
       }
-      if (!rel.following.map(id => id.toString()).includes(target)) {
-        rel.following.push(target)
+      if (!rel.following.map(id => id.toString()).includes(ctx.params.id)) {
+        rel.following.push(ctx.params.id)
         rel.save()
         ctx.body = {
           message: 'ok',
@@ -163,7 +167,6 @@ class UsersCtl {
   }
 
   async unfollow(ctx) {
-    const target = ctx.params.id
     await User.findById(ctx.state.user.id, 'following', async (err, rel) => { 
       if (err) {
         ctx.status = 404
@@ -172,7 +175,7 @@ class UsersCtl {
           data: []
         }
       }
-      const idx = rel.following.map(id => id.toString()).indexOf(target)
+      const idx = rel.following.map(id => id.toString()).indexOf(ctx.params.id)
       if (idx > -1) {
         rel.following.splice(idx, 1)
         rel.save()
@@ -182,12 +185,7 @@ class UsersCtl {
           error_info: ''
         }
       } else {
-        ctx.status = 401
-        ctx.body = {
-          message: 'fail',
-          reason: '并未关注',
-          data: []
-        }
+        ctx.throw(403, '非法操作，没关注过')
       }
     })
   }
@@ -233,10 +231,9 @@ class UsersCtl {
   }
 
   async followTopic(ctx) {
-    const target = ctx.params.id
     const me = await User.findById(ctx.state.user.id).select('+followingTopics')
-    if (!me.followingTopics.map(id => id.toString()).includes(target)) {
-      me.followingTopics.push(target)
+    if (!me.followingTopics.map(id => id.toString()).includes(ctx.params.id)) {
+      me.followingTopics.push(ctx.params.id)
       me.save()
     } else {
       ctx.throw(401, '关注错误，重复关注')
@@ -250,14 +247,13 @@ class UsersCtl {
   }
 
   async unfollowTopic(ctx) {
-    const target = ctx.params.id
     const me = await User.findById(ctx.state.user.id).select('+followingTopics')
-    const idx = me.followingTopics.map(id => id.toString()).indexOf(target)
+    const idx = me.followingTopics.map(id => id.toString()).indexOf(ctx.params.id)
     if (idx > -1) {
       me.followingTopics.splice(idx, 1)
       me.save()
     } else {
-      ctx.throw(401, '取关错误，未关注')
+      ctx.throw(401, '非法操作，未关注')
     }
     ctx.status = 200
     ctx.body = {
@@ -268,11 +264,11 @@ class UsersCtl {
   }
 
   async queryFollowingTopics(ctx) { 
-    const topics = await User.findById(ctx.params.id, 'followingTopics').populate('followingTopics')
+    const user = await User.findById(ctx.params.id, 'followingTopics').populate('followingTopics')
     ctx.status = 200
     ctx.body = {
       message: 'ok',
-      result: topics.followingTopics,
+      result: user.followingTopics,
       error_info: ''
     }
   }
@@ -288,10 +284,9 @@ class UsersCtl {
   }
 
   async followQuestion(ctx) {
-    const target = ctx.params.id
     const me = await User.findById(ctx.state.user.id).select('+followingQuestions')
-    if (!me.followingQuestions.map(id => id.toString()).includes(target)) {
-      me.followingQuestions.push(target)
+    if (!me.followingQuestions.map(id => id.toString()).includes(ctx.params.id)) {
+      me.followingQuestions.push(ctx.params.id)
       me.save()
     } else {
       ctx.throw(401, '关注错误，重复关注')
@@ -305,14 +300,13 @@ class UsersCtl {
   }
 
   async unfollowQuestion(ctx) {
-    const target = ctx.params.id
     const me = await User.findById(ctx.state.user.id).select('+followingQuestions')
-    const idx = me.followingQuestions.map(id => id.toString()).indexOf(target)
+    const idx = me.followingQuestions.map(id => id.toString()).indexOf(ctx.params.id)
     if (idx > -1) {
       me.followingQuestions.splice(idx, 1)
       me.save()
     } else {
-      ctx.throw(401, '取关错误，未关注')
+      ctx.throw(401, '非法操作，未关注')
     }
     ctx.status = 200
     ctx.body = {
@@ -344,6 +338,130 @@ class UsersCtl {
         }
       }
     })
+  }
+
+  async queryLikingAnswers(ctx) { 
+    const user = await User.findById(ctx.params.id, 'likingAnswers').populate('likingAnswers')
+    ctx.status = 200
+    ctx.body = {
+      message: 'ok',
+      result: user.likingAnswers,
+      error_info: ''
+    }
+  }
+
+  async likeAnswer(ctx, next) {
+    const me = await User.findById(ctx.state.user.id, 'likingAnswers')
+    if (!me.likingAnswers.map(id => id.toString()).includes(ctx.params.id)) {
+      me.likingAnswers.push(ctx.params.id)
+      me.save()
+      await Answer.findByIdAndUpdate(ctx.params.id, { $inc: { voteCount: 1 } })
+      await next()
+    } else { 
+      ctx.throw(403, '非法操作，重复点赞')
+    }
+  }
+
+  async unLikeAnswer(ctx) { // 取消点赞
+    const me = await User.findById(ctx.state.user.id, 'likingAnswers')
+    const idx = me.likingAnswers.map(id => id.toString()).indexOf(ctx.params.id)
+    if (idx > -1) {
+      me.likingAnswers.splice(idx, 1)
+      me.save(async (err) => {
+        if (err) return ctx.throw(403, err)
+        await Answer.findByIdAndUpdate(ctx.params.id, { $inc: { voteCount: -1 } })
+      })
+      ctx.status = 200
+      ctx.body = {
+        message: 'ok',
+        result: [],
+        error_info: ''
+      }
+    } else { 
+      ctx.throw(403, '非法操作，没赞过这个回答')
+    }
+    ctx.status = 204;
+  }
+
+  async queryDislikingAnswers(ctx) { 
+    const user = await User.findById(ctx.params.id, 'dislikingAnswers').populate('dislikingAnswers')
+    ctx.status = 200
+    ctx.body = {
+      message: 'ok',
+      result: user.dislikingAnswers,
+      error_info: ''
+    }
+  }
+
+  async dislikeAnswer(ctx, next) {
+    const me = await User.findById(ctx.state.user.id, 'dislikingAnswers')
+    if (!me.dislikingAnswers.map(id => id.toString()).includes(ctx.params.id)) {
+      me.dislikingAnswers.push(ctx.params.id)
+      me.save()
+      await next()
+    } else { 
+      ctx.throw(403, '非法操作，重复踩')
+    }
+  }
+
+  async unDislikeAnswer(ctx) {
+    const me = await User.findById(ctx.state.user.id, 'dislikingAnswers')
+    const idx = me.dislikingAnswers.map(id => id.toString()).indexOf(ctx.params.id)
+    if (idx > -1) {
+      me.dislikingAnswers.splice(idx, 1)
+      me.save()
+      ctx.status = 200
+      ctx.body = {
+        message: 'ok',
+        result: [],
+        error_info: ''
+      }
+    } else { 
+      ctx.throw(403, '非法操作，没踩过这个回答')
+    }
+    ctx.status = 204;
+  }
+
+  async queryCollectingAnswers(ctx) { 
+    const user = await User.findById(ctx.params.id, 'collectingAnswers').populate('collectingAnswers')
+    ctx.status = 200
+    ctx.body = {
+      message: 'ok',
+      result: user.collectingAnswers,
+      error_info: ''
+    }
+  }
+
+  async collectAnswer(ctx) { 
+    const me = await User.findById(ctx.state.user.id, 'collectingAnswers')
+    if (!me.collectingAnswers.map(id => id.toString()).includes(ctx.params.id)) {
+      me.collectingAnswers.push(ctx.params.id)
+      me.save()
+      ctx.body = {
+        message: 'ok',
+        result: [],
+        error_info: ''
+      }
+    } else { 
+      ctx.throw(403, '非法操作，重复收藏')
+    }
+  }
+
+  async unCollectAnswer(ctx) { 
+    const me = await User.findById(ctx.state.user.id, 'collectingAnswers')
+    const idx = me.collectingAnswers.map(id => id.toString()).indexOf(ctx.params.id)
+    if (idx > -1) {
+      me.collectingAnswers.splice(idx, 1)
+      me.save()
+      ctx.status = 200
+      ctx.body = {
+        message: 'ok',
+        result: [],
+        error_info: ''
+      }
+    } else { 
+      ctx.throw(403, '非法操作，收藏中无此回答')
+    }
   }
 
 }
