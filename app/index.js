@@ -19,6 +19,8 @@ mongoose.connect(ConnectStr, {
   console.log('Mongoose connection error: ' + err);
 })
 
+console.log('环境变量 NODE_ENV', process.env.NODE_ENV);
+
 app.use(koaStatic(p.join(__dirname, 'public')))
 app.use(error({
   postFormat: (e, { stack, ...rest }) => process.env.NODE_ENV === 'production' ? rest : { stack, ...rest }
