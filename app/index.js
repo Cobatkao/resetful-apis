@@ -34,6 +34,6 @@ app.use(parameter(app))
 routing(app) // 遍历routes目录注册路由中间件
 
  
-app.listen(8888), () => {
-  console.log('server is running on Port 8888');
+app.listen(3000), () => {
+  console.log('server is running on Port 3000');
 };

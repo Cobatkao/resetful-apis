@@ -1,4 +1,4 @@
-@dev_host = http://localhost:8888
+@dev_host = http://localhost:3000
 @id = 5f85447425e9badfde987be8
 @token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmODU0NDc0MjVlOWJhZGZkZTk4N2JlOCIsIm5hbWUiOiLmlrDkuroiLCJpYXQiOjE2MDI2NTQ3MzksImV4cCI6MTYwMzI1OTUzOX0.eytvO1z4NzmFiuVVt-m5nrFR6yRICxgcLbXWSHST1PI
 
@@ -37,7 +37,7 @@ content-type: application/json
 Authorization:Bearer {{token}}
 
 {
-    "avatar_url": "http://localhost:8888/uploads/upload_54edd1983bf58a6076bf506442ec5e22.png",
+    "avatar_url": "http://localhost:3000/uploads/upload_54edd1983bf58a6076bf506442ec5e22.png",
     "gender": "male",
     "headline": "我是新人，多多关照",
     "residence": ["北京", "福州", "厦门"],
