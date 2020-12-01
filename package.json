@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "cross-env NODE_ENV=development nodemon app",
     "dev": "node app",
-    "start": "cross-env NODE_ENV=production node app"
+    "start": "cross-env NODE_ENV=production node app",
+    "ava": "cross-env NODE_ENV=test ava test",
+    "test": "cross-env NODE_ENV=test nyc --reporter=html --reporter=text ava --serial",
   },
   "author": "",
   "license": "ISC",
@@ -20,12 +21,18 @@
     "koa-parameter": "^3.0.1",
     "koa-router": "^9.1.0",
     "koa-static": "^5.0.0",
-    "mongoose": "^5.9.28",
-    "pug": "^3.0.0"
+    "mongoose": "^5.9.28"
   },
   "devDependencies": {
     "cross-env": "^7.0.2",
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.4",
+    "ava": "^3.13.0",
+    "ava-spec": "^1.1.1",
+    "nyc": "^15.1.0",
+    "pug": "^3.0.0",
+    "sinon": "^9.2.1",
+    "superkoa": "^1.0.3",
+    "supertest": "^6.0.1"
   },
   "description": ""
 }

@@ -1,0 +1,14 @@
+language: node_js
+node_js:
+  - 12
+branchs:
+  - main
+addons:
+  apt:
+    packages:
+      - sshpass
+install: "yarn"
+script:
+  - "yarn test"
+after_success:
+  - ./script/deploy.sh
